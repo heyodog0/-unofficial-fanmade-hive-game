@@ -62,14 +62,14 @@ export const isConnected = (board) => {
   return seen.size === groundPieces.length;
 };
 
-export const canMove = (board, currentPlayer, turn) => {
-    // Can't move until queen is placed
-    const hasQueen = board.some(piece => 
-      piece.p === currentPlayer && piece.t === 'queen'
-    );
+// export const canMove = (board, currentPlayer, turn) => {
+//     // Can't move until queen is placed
+//     const hasQueen = board.some(piece => 
+//       piece.p === currentPlayer && piece.t === 'queen'
+//     );
     
-    return hasQueen;
-  };
+//     return hasQueen;
+//   };
 
 export const canPlace = (board, q, r, type, player, turn) => {
     // For the first placement
