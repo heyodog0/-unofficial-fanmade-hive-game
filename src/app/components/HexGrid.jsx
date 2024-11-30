@@ -26,7 +26,7 @@ const HexGrid = ({
       points={points}
       fill={highlightColor}
       stroke="#ddd"
-      strokeWidth="0.5"
+      strokeWidth="0.05"
       className="cursor-pointer transition-colors duration-200 hover:opacity-80"
       onClick={onClick}
     />

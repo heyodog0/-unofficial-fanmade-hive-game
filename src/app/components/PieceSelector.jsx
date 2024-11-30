@@ -48,7 +48,7 @@ const PieceSelector = ({
                 r: 0,
                 z: 0,
               }}
-              size={60}
+              size={50}
               position={{ x: 48, y: 48 }}
               selected={false}
             />
