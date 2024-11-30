@@ -15,4 +15,6 @@ npm install
 npm run dev
 ```
 
+## trying to add p2p soon
+
 Built with ♟️
