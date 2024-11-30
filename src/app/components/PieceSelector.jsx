@@ -79,62 +79,73 @@ const PieceSelector = ({
   PIECES,
 }) => {
   const renderPlayerPieces = (player) => (
-    <div className={`flex-1 ${player === currentPlayer ? 'scale-105' : 'opacity-50'}`}>
-      <div className="grid grid-cols-5 gap-4">
-        {Object.entries(PIECES).map(([name, maxCount]) => {
-          const remaining = maxCount - countPieces(board, name, player);
-          const isDisabled = remaining === 0 || 
-                         (!hasQueen(player) && turn > 6 && name !== 'queen') ||
-                         selectedPiece !== null ||
-                         player !== currentPlayer;
-          
-          return (
-            <button
-              key={`${player}-${name}`}
-              onClick={() => !isDisabled && setSelectedType(name)}
-              disabled={isDisabled}
-              className={`
-                w-24 h-24 rounded-xl font-semibold transition-all relative cursor-pointer
-                ${selectedType === name && player === currentPlayer
-                  ? 'bg-emerald-500 text-white scale-105 shadow-lg' 
-                  : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
-                }
-                ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}
-              `}
-            >
-              <div className="absolute inset-0 pointer-events-none">
-                <HexPiece
-                  piece={{
-                    t: name,
-                    p: player,
-                    q: 0,
-                    r: 0,
-                    z: 0
-                  }}
-                  size={35}
-                  position={{ x: 48, y: 48 }}
-                  selected={false}
-                />
-              </div>
-              <div className="absolute -top-2 w-8 h-8 flex items-center justify-center rounded-full pointer-events-none"
- style={{
-   backgroundColor: player === 1 ? 'rgb(59, 130, 246)' : 'rgb(239, 68, 68)'
- }}
+    <div
+      className={`flex flex-col items-center gap-3 ${
+        player === currentPlayer ? 'scale-105' : 'opacity-50'
+      }`}
+    >
+      {Object.entries(PIECES).map(([name, maxCount]) => {
+        const remaining = maxCount - countPieces(board, name, player);
+        const isDisabled =
+          remaining === 0 ||
+          (!hasQueen(player) && turn > 6 && name !== 'queen') ||
+          selectedPiece !== null ||
+          player !== currentPlayer;
+
+        return (
+          <button
+            key={`${player}-${name}`}
+            onClick={() => !isDisabled && setSelectedType(name)}
+            disabled={isDisabled}
+            className={`
+              w-20 h-20 bg-gray-700 rounded-md font-semibold transition-all flex items-center justify-center relative
+              ${selectedType === name && player === currentPlayer
+                ? 'bg-emerald-500 text-white shadow-lg'
+                : 'hover:bg-gray-600'
+              }
+              ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}
+            `}
+          >
+            <HexPiece
+              piece={{
+                t: name,
+                p: player,
+                q: 0,
+                r: 0,
+                z: 0,
+              }}
+              size={50}
+              position={{ x: 40, y:40 }}
+              selected={false}
+            />
+<div
+  className="absolute top-1 left-1 w-6 h-6 flex items-center justify-center rounded-full"
+  style={{
+    backgroundColor:
+      player === 1 ? 'rgb(59, 130, 246)' : 'rgb(239, 68, 68)',
+  }}
 >
- <span className="text-lg font-bold text-white">{remaining}</span>
-</div>
-            </button>
-          );
-        })}
-      </div>
+  <span className="text-xs font-bold text-white">{remaining}</span>
+              {/* <span className="text-xs font-bold text-white">{remaining}</span> */}
+            </div>
+          </button>
+        );
+      })}
     </div>
   );
 
   return (
-    <div className="fixed bottom-8 left-0 right-0 bg-gray-800 p-4">
-      <div className="container mx-auto max-w-6xl flex justify-center gap-24">
+    <div className="fixed top-0 left-0 bottom-0 right-0 pointer-events-none flex">
+      {/* Player 1 on the left */}
+      <div className="pointer-events-auto bg-gray-800 w-28 flex flex-col items-center justify-center gap-4 p-2">
         {renderPlayerPieces(1)}
-        <div className="w-px h-full bg-gray-600" />
+      </div>
+
+      {/* Divider for the game board */}
+      <div className="flex-1 relative"></div>
+
+      {/* Player 2 on the right */}
+      <div className="pointer-events-auto bg-gray-800 w-28 flex flex-col items-center justify-center gap-4 p-2">
         {renderPlayerPieces(2)}
       </div>
     </div>

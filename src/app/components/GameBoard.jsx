@@ -126,12 +126,13 @@ const GameBoard = ({
   );
 
   return (
-    <div className="w-full h-full relative">
+<div className="relative aspect-square bg-white rounded-lg">
       <svg width="100%" height="100%" viewBox="0 0 800 800" className="bg-white">
-        {Array(21).fill().flatMap((_, r) =>
-          Array(21).fill().map((_, q) => {
-            const qCoord = q - 10;
-            const rCoord = r - 10;
+      {/* // Change from Array(21) to Array(17) */}
+{Array(25).fill().flatMap((_, r) =>
+  Array(25).fill().map((_, q) => {
+    const qCoord = q - 13;  // Change from -10 to -8
+    const rCoord = r - 11;  // Change from -10 to -8
             const pos = calculatePosition(qCoord, rCoord, hexSize);
             
             const isOccupied = board.some(p => p.q === qCoord && p.r === rCoord);

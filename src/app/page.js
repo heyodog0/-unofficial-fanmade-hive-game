@@ -23,7 +23,7 @@ const HiveGame = () => {
   const [highlightedTiles, setHighlightedTiles] = useState([]);
   const [canMakeMove, setCanMakeMove] = useState(true);
  
-  const HEX_SIZE = 60;
+  const HEX_SIZE = 40;
   const playerColors = {
     1: 'rgb(59, 130, 246)', // Blue
     2: 'rgb(239, 68, 68)'   // Red
@@ -70,10 +70,10 @@ const HiveGame = () => {
   }, [board, currentPlayer, turn, hasQueen]);
 
   useEffect(() => {
-    // Set zoom level to 75%
-    document.body.style.zoom = "90%";
+    const zoomLevel = window.innerWidth < 1200 ? "80%" : "100%";
+    document.body.style.zoom = zoomLevel;
   }, []);
-
+  
 
   useEffect(() => {
     setSelectedPiece(null);
@@ -168,27 +168,29 @@ const handleForfeit = () => {
   </button>
 </div>
  
-        <div className="relative aspect-square bg-white rounded-lg overflow-hidden">
-          <div className="absolute inset-0 origin-center scale-[0.85]">
-            <GameBoard
-              board={board}
-              setBoard={setBoard}
-              selectedPiece={selectedPiece}
-              setSelectedPiece={setSelectedPiece}
-              selectedType={selectedType}
-              setSelectedType={setSelectedType}
-              hexSize={HEX_SIZE}
-              currentPlayer={currentPlayer}
-              setCurrentPlayer={setCurrentPlayer}
-              turn={turn}
-              setTurn={setTurn}
-              canMove={canMove}
-              highlightedTiles={highlightedTiles}
-              setHighlightedTiles={setHighlightedTiles}
-              calculatePosition={calculatePosition}
-            />
-          </div>
-        </div>
+<div className="relative aspect-square bg-white rounded-lg overflow-hidden" style={{ width: "800px", height: "800px" }}>
+  <div className="absolute inset-0 origin-center scale-[1]">
+    <GameBoard
+      board={board}
+      setBoard={setBoard}
+      selectedPiece={selectedPiece}
+      setSelectedPiece={setSelectedPiece}
+      selectedType={selectedType}
+      setSelectedType={setSelectedType}
+      hexSize={HEX_SIZE}
+      currentPlayer={currentPlayer}
+      setCurrentPlayer={setCurrentPlayer}
+      turn={turn}
+      setTurn={setTurn}
+      canMove={canMove}
+      highlightedTiles={highlightedTiles}
+      setHighlightedTiles={setHighlightedTiles}
+      calculatePosition={calculatePosition}
+    />
+  </div>
+</div>
+
+
       </div>
     </div>
   );
