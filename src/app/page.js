@@ -92,63 +92,73 @@ const HiveGame = () => {
     }
   };
   
-const handleHexClick = (q, r) => {
-  // Placing new piece
-  if (isPlacingNew) {
-    if (selectedType && canPlace(board, q, r, selectedType, currentPlayer, turn)) {
-      const newBoard = [...board, {q, r, z: 0, t: selectedType, p: currentPlayer}];
-      setBoard(newBoard);
-      setSelectedType(null);
-      setCurrentPlayer(p => p === 1 ? 2 : 1);
-      setTurn(t => t + 1);
-    }
-    return;
-  }
-  
-  // Moving existing piece
-  if (selectedPiece) {
-    const validMoves = getValidMoves(board, selectedPiece, turn);
-    console.log('Piece being moved:', selectedPiece);
-    console.log('Valid moves calculated:', validMoves);
-    console.log('Target position:', {q, r});
-    const isValidMove = validMoves.some(move => move.q === q && move.r === r);
-    console.log('Is this a valid move?', isValidMove);
-    
-    if (isValidMove) {
-      // Calculate new z value for the target position
-      const piecesAtTarget = board.filter(p => p.q === q && p.r === r)
-        .sort((a, b) => a.z - b.z);
-      
-      // If it's a beetle, it goes on top of the stack
-      // Otherwise, it stays at z=0
-      const newZ = selectedPiece.t === 'beetle' 
-        ? (piecesAtTarget.length > 0 ? piecesAtTarget[piecesAtTarget.length - 1].z + 1 : 0)
-        : 0;
-
-      const newBoard = board.map(piece => {
-        const isSelectedPiece = piece.q === selectedPiece.q && 
-                               piece.r === selectedPiece.r &&
-                               piece.t === selectedPiece.t &&
-                               piece.p === selectedPiece.p;
-                               
-        if (isSelectedPiece) {
-          return {
-            ...piece,
-            q: q,
-            r: r,
-            z: newZ
-          };
+  const handleHexClick = (q, r) => {
+    // Placing new piece
+    if (isPlacingNew) {
+      if (selectedType && canPlace(board, q, r, selectedType, currentPlayer, turn)) {
+        const newBoard = [...board, {q, r, z: 0, t: selectedType, p: currentPlayer}];
+        // Only place if it maintains connectivity
+        if (isConnected(newBoard)) {
+          setBoard(newBoard);
+          setSelectedType(null);
+          setCurrentPlayer(p => p === 1 ? 2 : 1);
+          setTurn(t => t + 1);
         }
-        return piece;
-      });
-      
-      setBoard(newBoard);
-      setSelectedPiece(null);
-      setCurrentPlayer(p => p === 1 ? 2 : 1);
-      setTurn(t => t + 1);
+      }
+      return;
     }
-  }
-};
+    
+    // Moving existing piece
+    if (selectedPiece) {
+      const validMoves = getValidMoves(board, selectedPiece, turn);
+      console.log('Piece being moved:', selectedPiece);
+      console.log('Valid moves calculated:', validMoves);
+      console.log('Target position:', {q, r});
+      const isValidMove = validMoves.some(move => move.q === q && move.r === r);
+      console.log('Is this a valid move?', isValidMove);
+      
+      if (isValidMove) {
+        // Calculate new z value for the target position
+        const piecesAtTarget = board.filter(p => p.q === q && p.r === r)
+          .sort((a, b) => a.z - b.z);
+        
+        // If it's a beetle, it goes on top of the stack
+        // Otherwise, it stays at z=0
+        const newZ = selectedPiece.t === 'beetle' 
+          ? (piecesAtTarget.length > 0 ? piecesAtTarget[piecesAtTarget.length - 1].z + 1 : 0)
+          : 0;
+  
+        // Create the potential new board state
+        const newBoard = board.map(piece => {
+          const isSelectedPiece = piece.q === selectedPiece.q && 
+                                 piece.r === selectedPiece.r &&
+                                 piece.t === selectedPiece.t &&
+                                 piece.p === selectedPiece.p &&
+                                 piece.z === selectedPiece.z;
+                                 
+          if (isSelectedPiece) {
+            return {
+              ...piece,
+              q: q,
+              r: r,
+              z: newZ
+            };
+          }
+          return piece;
+        });
+  
+        // Only allow the move if it maintains connectivity
+        if (isConnected(newBoard)) {
+          setBoard(newBoard);
+          setSelectedPiece(null);
+          setCurrentPlayer(p => p === 1 ? 2 : 1);
+          setTurn(t => t + 1);
+        } else {
+          console.log('Move would break hive connectivity');
+        }
+      }
+    }
+  };
 
   const GameControls = () => {
     const handleModeChange = (placing) => {

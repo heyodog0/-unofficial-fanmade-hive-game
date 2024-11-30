@@ -29,14 +29,16 @@ const GameBoard = ({
             const qCoord = q - 10;
             const rCoord = r - 10;
             const pos = calculatePosition(qCoord, rCoord, hexSize);
+            const isOccupied = board.some(p => p.q === qCoord && p.r === rCoord);
             
-            // Check if this hex is a valid move
+            // For beetle moves, we want to show highlights even on occupied spaces
             const validMove = validMoves.some(m => 
               m.q === qCoord && 
               m.r === rCoord
-            );
+            ) && (selectedPiece?.t === 'beetle' || !isOccupied);
             
             const validPlace = (isPlacingNew && selectedType && 
+              !isOccupied && // Never show green placement highlights on occupied spaces
               canPlace(board, qCoord, rCoord, selectedType, currentPlayer, turn));
 
             return (
@@ -56,7 +58,7 @@ const GameBoard = ({
         {board.map((piece, i) => (
           <HexPiece
             key={i}
-            piece={{...piece, board: board}} // Pass the full board for stack calculation
+            piece={{...piece, board: board}}
             size={hexSize}
             selected={selectedPiece && 
                      piece.q === selectedPiece.q && 

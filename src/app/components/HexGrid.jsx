@@ -1,10 +1,12 @@
 // HexGrid.jsx
-const HexGrid = ({ size, valid, validMove, onClick, position }) => {
+const HexGrid = ({ size, valid, validMove, onClick, position, isOccupied }) => {
     const { x, y } = position;
     
     const getFillColor = () => {
-      if (validMove) return 'rgba(255, 255, 0, 0.3)';
-      if (valid) return 'rgba(0, 255, 0, 0.2)';
+      // Only show valid move highlights (yellow) on empty spaces
+      if (validMove && !isOccupied) return 'rgba(255, 255, 0, 0.3)';
+      // Only show valid placement highlights (green) on empty spaces
+      if (valid && !isOccupied) return 'rgba(0, 255, 0, 0.2)';
       return 'transparent';
     };
   
@@ -24,6 +26,6 @@ const HexGrid = ({ size, valid, validMove, onClick, position }) => {
         onClick={onClick}
       />
     );
-  };
+};
   
   export default HexGrid;
