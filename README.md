@@ -18,3 +18,5 @@ npm run dev
 ## trying to add p2p soon
 
 Built with ♟️
+
+<img width="1278" alt="image" src="https://github.com/user-attachments/assets/c20e5f0e-b5a6-42cb-8314-ac9d1bbd76b5">
