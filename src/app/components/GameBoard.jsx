@@ -16,6 +16,7 @@ const GameBoard = ({
     canPlace,
     currentPlayer,
     turn,
+    highlightedTiles, // Add highlightedTiles
     isPlacingNew,
 }) => {
     // Calculate valid moves once at the board level

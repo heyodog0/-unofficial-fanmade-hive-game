@@ -13,6 +13,7 @@ import {
   getValidMoves,
   canPlace,
   isConnected,
+  highlightLegalMoves, // Import this function
 } from '../app/components/GameLogic';
 
 const HiveGame = () => {
@@ -30,52 +31,109 @@ const HiveGame = () => {
 
   const hasQueen = (player) => countPieces(board, 'queen', player) > 0;
   const canMove = (player) => hasQueen(player);
+  const [highlightedTiles, setHighlightedTiles] = useState([]);
+
 
   const handlePieceClick = (piece) => {
     // Handle beetle climbing
     if (selectedPiece?.t === 'beetle') {
-      const isAdjacent = DIRECTIONS.some(([dq, dr]) => 
-        selectedPiece.q + dq === piece.q && 
+      const isAdjacent = DIRECTIONS.some(([dq, dr]) =>
+        selectedPiece.q + dq === piece.q &&
         selectedPiece.r + dr === piece.r
       );
-
+  
       if (isAdjacent) {
         const newBoard = board.map(p => {
-          if (p.q === selectedPiece.q && 
-              p.r === selectedPiece.r && 
-              p.z === selectedPiece.z) {
+          if (
+            p.q === selectedPiece.q &&
+            p.r === selectedPiece.r &&
+            p.z === selectedPiece.z
+          ) {
             return {
               ...p,
               q: piece.q,
               r: piece.r,
-              z: piece.z + 1
+              z: piece.z + 1, // Climb on top of the target piece
             };
           }
           return p;
         });
-        
+  
         if (isConnected(newBoard)) {
           setBoard(newBoard);
-          setSelectedPiece(null);
-          setCurrentPlayer(p => p === 1 ? 2 : 1);
-          setTurn(t => t + 1);
+          setSelectedPiece(null); // Deselect beetle
+          setHighlightedTiles([]); // Clear highlights
+          setCurrentPlayer(p => (p === 1 ? 2 : 1)); // Switch turns
+          setTurn(t => t + 1); // Increment turn
           return;
         }
       }
     }
-
-    // Handle piece selection
+  
+    // Handle regular piece selection
     if (piece.p === currentPlayer && canMove(currentPlayer)) {
-      if (selectedPiece && 
-          selectedPiece.q === piece.q && 
-          selectedPiece.r === piece.r) {
+      if (
+        selectedPiece &&
+        selectedPiece.q === piece.q &&
+        selectedPiece.r === piece.r
+      ) {
         setSelectedPiece(null);
+        setHighlightedTiles([]); // Clear highlights
       } else {
-        const pieceWithBoard = { ...piece, board: board };
-        setSelectedPiece(pieceWithBoard);
+        setSelectedPiece(piece);
+        highlightLegalMoves(board, piece, turn, setHighlightedTiles); // Highlight legal moves
       }
     }
   };
+  
+  
+  
+
+  // const handlePieceClick = (piece) => {
+  //   // Handle beetle climbing
+  //   if (selectedPiece?.t === 'beetle') {
+  //     const isAdjacent = DIRECTIONS.some(([dq, dr]) => 
+  //       selectedPiece.q + dq === piece.q && 
+  //       selectedPiece.r + dr === piece.r
+  //     );
+
+  //     if (isAdjacent) {
+  //       const newBoard = board.map(p => {
+  //         if (p.q === selectedPiece.q && 
+  //             p.r === selectedPiece.r && 
+  //             p.z === selectedPiece.z) {
+  //           return {
+  //             ...p,
+  //             q: piece.q,
+  //             r: piece.r,
+  //             z: piece.z + 1
+  //           };
+  //         }
+  //         return p;
+  //       });
+        
+  //       if (isConnected(newBoard)) {
+  //         setBoard(newBoard);
+  //         setSelectedPiece(null);
+  //         setCurrentPlayer(p => p === 1 ? 2 : 1);
+  //         setTurn(t => t + 1);
+  //         return;
+  //       }
+  //     }
+  //   }
+
+  //   // Handle piece selection
+  //   if (piece.p === currentPlayer && canMove(currentPlayer)) {
+  //     if (selectedPiece && 
+  //         selectedPiece.q === piece.q && 
+  //         selectedPiece.r === piece.r) {
+  //       setSelectedPiece(null);
+  //     } else {
+  //       const pieceWithBoard = { ...piece, board: board };
+  //       setSelectedPiece(pieceWithBoard);
+  //     }
+  //   }
+  // };
   
   const handleHexClick = (q, r) => {
     // Handle piece movement
@@ -208,21 +266,22 @@ const HiveGame = () => {
         </div>
 
         <div className="relative aspect-square bg-white rounded-lg overflow-hidden">
-          <GameBoard
-            board={board}
-            selectedPiece={selectedPiece}
-            selectedType={selectedType}
-            hexSize={HEX_SIZE}
-            getValidMoves={getValidMoves}
-            onHexClick={handleHexClick}
-            onPieceClick={handlePieceClick}
-            calculatePosition={calculatePosition}
-            canPlace={canPlace}
-            currentPlayer={currentPlayer}
-            turn={turn}
-            isPlacingNew={!selectedPiece}
-            playerColors={playerColors}
-          />
+        <GameBoard
+  board={board}
+  selectedPiece={selectedPiece}
+  selectedType={selectedType}
+  hexSize={HEX_SIZE}
+  getValidMoves={getValidMoves}
+  onHexClick={handleHexClick}
+  onPieceClick={handlePieceClick}
+  calculatePosition={calculatePosition}
+  canPlace={canPlace}
+  currentPlayer={currentPlayer}
+  turn={turn}
+  isPlacingNew={!selectedPiece}
+  playerColors={playerColors}
+  highlightedTiles={highlightedTiles} // Pass highlighted tiles
+/>
         </div>
       </div>
     </div>
