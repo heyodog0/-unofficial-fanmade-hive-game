@@ -17,14 +17,6 @@ import {
   findPieceOnTop
 } from '../app/components/GameLogic';
 
-const PieceIcons = {
-  queen: Crown,
-  beetle: Bug,
-  spider: Spider,
-  grasshopper: Grasshopper,
-  ant: Ant
-};
-
 const HiveGame = () => {
   const [board, setBoard] = useState([]);
   const [selectedPiece, setSelectedPiece] = useState(null);
@@ -40,51 +32,75 @@ const HiveGame = () => {
   };
 
   const hasQueen = (player) => countPieces(board, 'queen', player) > 0;
-  const canMove = (player) => hasQueen(player) || turn <= 6;
+
+  // This was incorrectly checking if they can move OR if it's first 6 turns
+  const canMove = (player) => hasQueen(player);
 
 
 
-  const handlePieceClick = (piece) => {
-    if (!isPlacingNew && canMove(currentPlayer)) {
-      // Find all pieces at this position
-      const piecesAtPosition = board.filter(p => p.q === piece.q && p.r === piece.r)
-        .sort((a, b) => a.z - b.z);
-      
-      // Get the topmost piece
-      const topPiece = piecesAtPosition[piecesAtPosition.length - 1];
-      
-      // Only allow selecting if it's the topmost piece and belongs to current player
-      if (piece === topPiece && piece.p === currentPlayer) {
-        setSelectedPiece(selectedPiece === piece ? null : piece);
-      }
-    }
-  };
-
-  const handleHexClick = (q, r) => {
-    if (!isPlacingNew && !canMove(currentPlayer)) return;
-
-    const piecesAtTarget = board.filter(p => p.q === q && p.r === r)
+// In handlePieceClick, update the condition:
+const handlePieceClick = (piece) => {
+  // Only allow moving pieces if the player has placed their queen
+  if (!isPlacingNew && hasQueen(currentPlayer)) {
+    const piecesAtPosition = board.filter(p => p.q === piece.q && p.r === piece.r)
       .sort((a, b) => a.z - b.z);
     
-    const newZ = piecesAtTarget.length;
-
-    const valid = !isPlacingNew
-      ? getValidMoves(board, selectedPiece, turn).some(m => m.q === q && m.r === r)
-      : canPlace(board, q, r, selectedType, currentPlayer, turn);
-
-    if (valid) {
-      const newBoard = !isPlacingNew
-        ? board.map(x => x === selectedPiece ? {...x, q, r, z: newZ} : x)
-        : [...board, {q, r, z: newZ, t: selectedType, p: currentPlayer}];
-
-      if (isConnected(newBoard)) {
-        setBoard(newBoard);
-        setSelectedPiece(null);
-        setCurrentPlayer(p => p === 1 ? 2 : 1);
-        setTurn(t => t + 1);
-      }
+    const topPiece = piecesAtPosition[piecesAtPosition.length - 1];
+    
+    if (piece === topPiece && piece.p === currentPlayer) {
+      const pieceWithBoard = { ...piece, board: board };
+      setSelectedPiece(selectedPiece === piece ? null : pieceWithBoard);
     }
-  };
+  }
+};
+  
+const handleHexClick = (q, r) => {
+  // Placing new piece
+  if (isPlacingNew) {
+    if (selectedType && canPlace(board, q, r, selectedType, currentPlayer, turn)) {
+      const newBoard = [...board, {q, r, z: 0, t: selectedType, p: currentPlayer}];
+      setBoard(newBoard);
+      setSelectedType(null);
+      setCurrentPlayer(p => p === 1 ? 2 : 1);
+      setTurn(t => t + 1);
+    }
+    return;
+  }
+  
+  // Moving existing piece
+  if (selectedPiece) {
+    const validMoves = getValidMoves(board, selectedPiece, turn);
+    console.log('Piece being moved:', selectedPiece);
+    console.log('Valid moves calculated:', validMoves);
+    console.log('Target position:', {q, r});
+    const isValidMove = validMoves.some(move => move.q === q && move.r === r);
+    console.log('Is this a valid move?', isValidMove);
+    
+    if (isValidMove) {
+      const newBoard = board.map(piece => {
+        const isSelectedPiece = piece.q === selectedPiece.q && 
+                               piece.r === selectedPiece.r &&
+                               piece.t === selectedPiece.t &&
+                               piece.p === selectedPiece.p;
+                               
+        if (isSelectedPiece) {
+          return {
+            ...piece,
+            q: q,
+            r: r,
+            z: 0
+          };
+        }
+        return piece;
+      });
+      
+      setBoard(newBoard);
+      setSelectedPiece(null);
+      setCurrentPlayer(p => p === 1 ? 2 : 1);
+      setTurn(t => t + 1);
+    }
+  }
+};
 
   const GameControls = () => {
     const handleModeChange = (placing) => {
@@ -93,7 +109,7 @@ const HiveGame = () => {
       setSelectedType(null);
     };
   
-    const canMoveCurrentPlayer = canMove(board, currentPlayer, turn);
+    const canMoveCurrentPlayer = hasQueen(currentPlayer);
   
     return (
       <div className="flex flex-col gap-4">

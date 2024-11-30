@@ -62,14 +62,14 @@ export const isConnected = (board) => {
   return seen.size === groundPieces.length;
 };
 
-// export const canMove = (board, currentPlayer, turn) => {
-//     // Can't move until queen is placed
-//     const hasQueen = board.some(piece => 
-//       piece.p === currentPlayer && piece.t === 'queen'
-//     );
+export const canMove = (board, currentPlayer) => {
+    // Can't move until queen is placed
+    const hasQueen = board.some(piece => 
+      piece.p === currentPlayer && piece.t === 'queen'
+    );
     
-//     return hasQueen;
-//   };
+    return hasQueen;
+};
 
 export const canPlace = (board, q, r, type, player, turn) => {
     // For the first placement
@@ -91,10 +91,16 @@ export const canPlace = (board, q, r, type, player, turn) => {
            (turn <= 6 || countPieces(board, 'queen', player) > 0 || type === 'queen');
   };
 
-export const getValidMoves = (board, piece, turn) => {
+  export const getValidMoves = (board, piece, turn) => {
+    if (!piece) return [];
+
     // First check: can't move any pieces until queen is placed
-    const hasQueen = board.some(p => p.p === piece.p && p.t === 'queen');
-    if (!piece || !hasQueen) return [];
+    const hasQueen = board.some(p => 
+        p.p === piece.p && // same player
+        p.t === 'queen'    // is queen
+    );
+    
+    if (!hasQueen) return [];
 
     const moves = new Set();
   
