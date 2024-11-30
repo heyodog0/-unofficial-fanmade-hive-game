@@ -1,7 +1,7 @@
 // app/page.js
 "use client"
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import GameBoard from '../app/components/GameBoard';
 import PieceSelector from '../app/components/PieceSelector';
 import GameStatus from '../app/components/GameStatus';
@@ -12,6 +12,7 @@ import {
   calculatePosition,
   getValidMoves,
   canPlace,
+  findPieceOnTop
 } from '../app/components/GameLogic';
 
 const HiveGame = () => {
@@ -31,9 +32,10 @@ const HiveGame = () => {
  
   const hasQueen = (player) => countPieces(board, 'queen', player) > 0;
   const canMove = (player) => hasQueen(player);
- 
-  const canMakeAnyMove = useCallback(() => {
-    // Check if can place any new pieces
+
+  // Check if any moves are available for the current player
+  const checkAvailableMoves = useCallback(() => {
+    // First check if we can place any new pieces
     for (const [type, maxCount] of Object.entries(PIECES)) {
       if (countPieces(board, type, currentPlayer) < maxCount) {
         for (let q = -10; q <= 10; q++) {
@@ -45,55 +47,38 @@ const HiveGame = () => {
         }
       }
     }
- 
-    // Check if can move existing pieces
-    const playerPieces = board.filter(p => p.p === currentPlayer);
-    return playerPieces.some(piece => {
-      const moves = getValidMoves(board, piece, turn);
-      return moves.length > 0;
-    });
-  }, [board, currentPlayer, turn]);
 
+    // Then check if we can move any existing pieces
+    if (hasQueen(currentPlayer)) {
+      // Only check pieces that are on top (not covered by beetles)
+      const playerPieces = board.filter(piece => {
+        if (piece.p !== currentPlayer) return false;
+        const topPiece = findPieceOnTop(board, piece.q, piece.r);
+        return topPiece && topPiece.z === piece.z;
+      });
+
+      return playerPieces.some(piece => {
+        const moves = getValidMoves(board, piece, turn);
+        return moves.length > 0;
+      });
+    }
+
+    return false;
+  }, [board, currentPlayer, turn]);
 
   useEffect(() => {
     setSelectedPiece(null);
     setSelectedType(null);
   }, [currentPlayer]);
 
-  const boardState = useMemo(() => ({
-    board,
-    currentPlayer,
-    turn,
-    selectedType,
-    selectedPiece
-  }), [board, currentPlayer, turn, selectedType, selectedPiece]);
-  
+  // Update canMakeMove whenever the board state changes
   useEffect(() => {
-    if (boardState.selectedType) {
-      const anyValidPlacements = Object.entries(PIECES).some(([type, maxCount]) => {
-        if (countPieces(boardState.board, type, boardState.currentPlayer) < maxCount) {
-          for (let q = -10; q <= 10; q++) {
-            for (let r = -10; r <= 10; r++) {
-              if (canPlace(boardState.board, q, r, type, boardState.currentPlayer, boardState.turn)) {
-                return true;
-              }
-            }
-          }
-        }
-        return false;
-      });
-      setCanMakeMove(anyValidPlacements);
-    } else if (boardState.selectedPiece) {
-      const moves = getValidMoves(boardState.board, boardState.selectedPiece, boardState.turn);
-      setCanMakeMove(moves.length > 0);
-    } else {
-      setCanMakeMove(true);
-    }
-  }, [boardState]);
-
+    setCanMakeMove(checkAvailableMoves());
+  }, [board, currentPlayer, turn, checkAvailableMoves]);
  
   return (
-<div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 pb-24">      <div className="w-[800px] flex flex-col gap-4">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 pb-24">
+      <div className="w-[800px] flex flex-col gap-4">
         <GameStatus 
           currentPlayer={currentPlayer}
           turn={turn}
@@ -153,6 +138,6 @@ const HiveGame = () => {
       </div>
     </div>
   );
- };
- 
- export default HiveGame;
+};
+
+export default HiveGame;
