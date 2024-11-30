@@ -60,7 +60,7 @@ const HexPiece = ({ piece, size, selected, onClick, position }) => {
           width: clickAreaSize,
           height: clickAreaSize,
           zIndex: piece.z * 10,
-          transform: selected ? 'scale(1.1)' : 'scale(1)',
+          transform: selected ? 'scale(1.4)' : 'scale(1)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center'
