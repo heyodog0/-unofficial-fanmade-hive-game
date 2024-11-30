@@ -151,7 +151,7 @@ const HiveGame = () => {
       )}
 
       {/* Game UI */}
-      <div className="w-[800px] flex flex-col gap-4 z-0">
+      <div className="w-[800px] flex flex-col gap-0 z-0">
         <GameStatus 
           currentPlayer={currentPlayer}
           turn={turn}
