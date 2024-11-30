@@ -129,6 +129,8 @@ const HiveGame = () => {
     setHighlightedTiles([]);
     setCanMakeMove(true);
     setWinner(null);
+    setInitialTime(600); 
+    setShowTimerSetup(true); 
   };
 
   return (
