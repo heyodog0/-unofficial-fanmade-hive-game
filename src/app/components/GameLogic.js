@@ -74,22 +74,26 @@ export const canMove = (board, currentPlayer) => {
 export const canPlace = (board, q, r, type, player, turn) => {
     // For the first placement
     if (!board.length) {
-      // Center 7 hexagons - center hex plus its 6 neighbors
-      // Using axial coordinates, distance from center is |q| + |r| + |-q-r|
       const distance = Math.abs(q) + Math.abs(r) + Math.abs(-q-r);
-      return distance <= 2; // Distance of 2 or less gives us the center 7 hexagons
+      return distance <= 2;
     }
     
+    // Get all pieces that aren't covered by beetles
+    const uncoveredPieces = board.filter(piece => {
+      const pieceOnTop = findPieceOnTop(board, piece.q, piece.r);
+      return pieceOnTop.z === piece.z; // Only include if it's the top piece
+    });
+    
     const neighbors = getAdjacentCoords(q, r)
-      .map(n => findPieceAt(board, n.q, n.r))
+      .map(n => findPieceOnTop(board, n.q, n.r))
       .filter(x => x);
     
     return neighbors.length > 0 && 
-           (board.length < 2 || neighbors.some(x => x.p === player)) &&
-           neighbors.every(x => board.length < 2 || x.p === player) &&
+           (uncoveredPieces.length < 2 || neighbors.some(x => x.p === player)) &&
+           neighbors.every(x => uncoveredPieces.length < 2 || x.p === player) &&
            countPieces(board, type, player) < PIECES[type] &&
            (turn <= 6 || countPieces(board, 'queen', player) > 0 || type === 'queen');
-  };
+};
 
   export const getValidMoves = (board, piece, turn) => {
     if (!piece) return [];

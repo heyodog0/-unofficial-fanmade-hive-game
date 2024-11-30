@@ -7,6 +7,7 @@ import GameBoard from '../app/components/GameBoard';
 import HexPiece from '../app/components/HexPiece';
 import { 
   PIECES, 
+  DIRECTIONS,
   calculatePosition, 
   hasLost,
   countPieces,
@@ -38,21 +39,58 @@ const HiveGame = () => {
 
 
 
-// In handlePieceClick, update the condition:
-const handlePieceClick = (piece) => {
-  // Only allow moving pieces if the player has placed their queen
-  if (!isPlacingNew && hasQueen(currentPlayer)) {
-    const piecesAtPosition = board.filter(p => p.q === piece.q && p.r === piece.r)
-      .sort((a, b) => a.z - b.z);
-    
-    const topPiece = piecesAtPosition[piecesAtPosition.length - 1];
-    
-    if (piece === topPiece && piece.p === currentPlayer) {
-      const pieceWithBoard = { ...piece, board: board };
-      setSelectedPiece(selectedPiece === piece ? null : pieceWithBoard);
+  const handlePieceClick = (piece) => {
+    if (!isPlacingNew && hasQueen(currentPlayer)) {
+      // If we have a beetle selected
+      if (selectedPiece?.t === 'beetle') {
+        // Check if clicked piece is adjacent to our beetle
+        const isAdjacent = DIRECTIONS.some(([dq, dr]) => 
+          selectedPiece.q + dq === piece.q && 
+          selectedPiece.r + dr === piece.r
+        );
+  
+        if (isAdjacent) {
+          // Create potential new board state
+          const newBoard = board.map(p => {
+            if (p.q === selectedPiece.q && 
+                p.r === selectedPiece.r && 
+                p.z === selectedPiece.z) {
+              return {
+                ...p,
+                q: piece.q,
+                r: piece.r,
+                z: piece.z + 1
+              };
+            }
+            return p;
+          });
+          
+          // Only allow the move if it doesn't break hive connectivity
+          if (isConnected(newBoard)) {
+            setBoard(newBoard);
+            setSelectedPiece(null);
+            setCurrentPlayer(p => p === 1 ? 2 : 1);
+            setTurn(t => t + 1);
+            return;
+          }
+        }
+      }
+      
+      // Only handle clicks for current player's pieces
+      if (piece.p === currentPlayer) {
+        // If we click the currently selected piece, deselect it
+        if (selectedPiece && 
+            selectedPiece.q === piece.q && 
+            selectedPiece.r === piece.r) {
+          setSelectedPiece(null);
+        } else {
+          // Otherwise, select the new piece
+          const pieceWithBoard = { ...piece, board: board };
+          setSelectedPiece(pieceWithBoard);
+        }
+      }
     }
-  }
-};
+  };
   
 const handleHexClick = (q, r) => {
   // Placing new piece
@@ -77,6 +115,16 @@ const handleHexClick = (q, r) => {
     console.log('Is this a valid move?', isValidMove);
     
     if (isValidMove) {
+      // Calculate new z value for the target position
+      const piecesAtTarget = board.filter(p => p.q === q && p.r === r)
+        .sort((a, b) => a.z - b.z);
+      
+      // If it's a beetle, it goes on top of the stack
+      // Otherwise, it stays at z=0
+      const newZ = selectedPiece.t === 'beetle' 
+        ? (piecesAtTarget.length > 0 ? piecesAtTarget[piecesAtTarget.length - 1].z + 1 : 0)
+        : 0;
+
       const newBoard = board.map(piece => {
         const isSelectedPiece = piece.q === selectedPiece.q && 
                                piece.r === selectedPiece.r &&
@@ -88,7 +136,7 @@ const handleHexClick = (q, r) => {
             ...piece,
             q: q,
             r: r,
-            z: 0
+            z: newZ
           };
         }
         return piece;

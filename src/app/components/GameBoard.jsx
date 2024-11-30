@@ -21,12 +21,6 @@ const GameBoard = ({
     const validMoves = (!isPlacingNew && selectedPiece) ? 
       getValidMoves(board, selectedPiece, turn) : [];
     
-    console.log('Debug validMoves:', {
-      selectedPiece,
-      validMoves,
-      board
-    });
-    
     return (
       <div className="w-full h-full relative">
         <svg width="100%" height="100%" viewBox="0 0 800 800" className="bg-white">
@@ -35,13 +29,15 @@ const GameBoard = ({
             const qCoord = q - 10;
             const rCoord = r - 10;
             const pos = calculatePosition(qCoord, rCoord, hexSize);
-            const isOccupied = board.some(p => p.q === qCoord && p.r === rCoord);
             
-            const validMove = (!isPlacingNew && selectedPiece) ? 
-              validMoves.some(m => m.q === qCoord && m.r === rCoord && m.z === 0) : false;
+            // Check if this hex is a valid move
+            const validMove = validMoves.some(m => 
+              m.q === qCoord && 
+              m.r === rCoord
+            );
             
             const validPlace = (isPlacingNew && selectedType && 
-              !isOccupied && canPlace(board, qCoord, rCoord, selectedType, currentPlayer, turn));
+              canPlace(board, qCoord, rCoord, selectedType, currentPlayer, turn));
 
             return (
               <HexGrid
@@ -60,9 +56,12 @@ const GameBoard = ({
         {board.map((piece, i) => (
           <HexPiece
             key={i}
-            piece={piece}
+            piece={{...piece, board: board}} // Pass the full board for stack calculation
             size={hexSize}
-            selected={selectedPiece && piece.q === selectedPiece.q && piece.r === selectedPiece.r}
+            selected={selectedPiece && 
+                     piece.q === selectedPiece.q && 
+                     piece.r === selectedPiece.r &&
+                     piece.z === selectedPiece.z}
             position={calculatePosition(piece.q, piece.r, hexSize)}
             onClick={() => onPieceClick(piece)}
           />

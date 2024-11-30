@@ -30,19 +30,18 @@ const PieceIcon = ({ type, color }) => {
   );
 };
 
+
 const HexPiece = ({ piece, size, selected, onClick, position }) => {
     const zOffset = piece.z * 2;
     const pieceSize = selected ? size * 1.5 : size * 1.5;
+    const clickAreaSize = pieceSize * 1.2; // Larger click area
     const color = piece.p === 1 ? 'rgb(59, 130, 246)' : 'rgb(239, 68, 68)';
     
-    // Important: Need access to the full board to calculate stacks
-    const board = piece.board || [];
-    
     // Get all pieces at this position
-    const stackedPieces = board.filter(p => 
+    const stackedPieces = piece.board?.filter(p => 
       p.q === piece.q && 
       p.r === piece.r
-    ).sort((a, b) => a.z - b.z);
+    ).sort((a, b) => a.z - b.z) || [];
     
     // Only render the top piece
     const isTopPiece = stackedPieces.length === 0 || 
@@ -54,27 +53,39 @@ const HexPiece = ({ piece, size, selected, onClick, position }) => {
     
     return (
       <div
-        className={`absolute cursor-pointer transition-transform duration-200 ${selected ? 'scale-110' : ''}`}
+        className="absolute cursor-pointer transition-transform duration-200"
         style={{
-          left: position.x - pieceSize/2,
-          top: position.y - pieceSize/2 - zOffset,
+          left: position.x - clickAreaSize/2,
+          top: position.y - clickAreaSize/2 - zOffset,
+          width: clickAreaSize,
+          height: clickAreaSize,
           zIndex: piece.z * 10,
-          filter: stackedPieces.length > 1 ? 'drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.3))' : ''
+          transform: selected ? 'scale(1.1)' : 'scale(1)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
         }}
-        onClick={onClick}
+        onClick={(e) => {
+          e.stopPropagation();
+          onClick();
+        }}
       >
-        {/* Main piece */}
-        <Hexagon size={pieceSize} color={color} fill={color} strokeWidth={2} />
-        <PieceIcon type={piece.t} color="white" />
-        
-        {/* Stack indicator */}
-        {stackedPieces.length > 1 && (
-          <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-2 py-0.5 rounded-full text-xs font-bold">
-            +{stackedPieces.length - 1}
-          </div>
-        )}
+        <div style={{ 
+          width: pieceSize, 
+          height: pieceSize,
+          position: 'relative' 
+        }}>
+          <Hexagon size={pieceSize} color={color} fill={color} strokeWidth={2} />
+          <PieceIcon type={piece.t} color="white" />
+          
+          {stackedPieces.length > 1 && (
+            <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-2 py-0.5 rounded-full text-xs font-bold">
+              +{stackedPieces.length - 1}
+            </div>
+          )}
+        </div>
       </div>
     );
-  };
+};
   
   export default HexPiece;
