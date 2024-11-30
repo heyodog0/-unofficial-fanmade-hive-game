@@ -33,8 +33,9 @@ const PieceIcon = ({ type, color }) => {
 
 const HexPiece = ({ piece, size, selected, onClick, position }) => {
     const zOffset = piece.z * 2;
-    const pieceSize = selected ? size * 3 : size * 1.9;
-    const clickAreaSize = pieceSize ;
+    const pieceSize = selected ? size * 1.5 : size * 1.9;
+    const pieceSizez = selected ? size * .5 : size * 1.9;
+    const clickAreaSize = pieceSizez ;
     const color = piece.p === 1 ? 'rgb(59, 130, 246)' : 'rgb(239, 68, 68)';
     
     // Get all pieces at this position
