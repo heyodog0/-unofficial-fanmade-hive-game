@@ -566,7 +566,8 @@ export const canPlace = (board, q, r, type, player, turn) => {
 
   if (piece.t === 'grasshopper') {
     DIRECTIONS.forEach(([dq, dr]) => {
-      let q = piece.q + dq, r = piece.r + dr;
+      let q = piece.q + dq;
+      let r = piece.r + dr;
       let jumped = false;
       
       while (findPieceAt(board, q, r)) {
@@ -576,7 +577,13 @@ export const canPlace = (board, q, r, type, player, turn) => {
       }
       
       if (jumped && !findPieceOnTop(board, q, r)) {
-        moves.add(`${q},${r},0`);
+        // Create a new board state with the piece moved to test connectivity
+        const newBoard = [...board.filter(p => p !== piece), 
+          {...piece, q, r, z: 0}];
+        
+        if (isConnected(newBoard)) {
+          moves.add(`${q},${r},0`);
+        }
       }
     });
   }
