@@ -37,11 +37,11 @@ const PieceSelector = ({ pieces, selectedType, onSelect, isPlacingNew, currentPl
                       strokeWidth={.01} 
                     />
                     <div className="absolute inset-0 flex items-center justify-center text-white pointer-events-none">
-                      {name === 'queen' && <Crown size={24} className="pointer-events-none" />}
+                      {/* {name === 'queen' && <Crown size={24} className="pointer-events-none" />}
                       {name === 'beetle' && <Bug size={24} className="pointer-events-none" />}
                       {name === 'spider' && <Spider size={24} className="pointer-events-none" />}
                       {name === 'grasshopper' && <Grasshopper size={24} className="pointer-events-none" />}
-                      {name === 'ant' && <Ant size={24} className="pointer-events-none" />}
+                      {name === 'ant' && <Ant size={24} className="pointer-events-none" />} */}
                     </div>
                   </div>
                 </div>
