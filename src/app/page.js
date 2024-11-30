@@ -23,7 +23,7 @@ const HiveGame = () => {
   const [highlightedTiles, setHighlightedTiles] = useState([]);
   const [canMakeMove, setCanMakeMove] = useState(true);
  
-  const HEX_SIZE = 50;
+  const HEX_SIZE = 60;
   const playerColors = {
     1: 'rgb(59, 130, 246)', // Blue
     2: 'rgb(239, 68, 68)'   // Red
@@ -93,8 +93,7 @@ const HiveGame = () => {
 
  
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900">
-      <div className="w-[800px] flex flex-col gap-4">
+<div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 pb-24">      <div className="w-[800px] flex flex-col gap-4">
         <GameStatus 
           currentPlayer={currentPlayer}
           turn={turn}
