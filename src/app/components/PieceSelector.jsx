@@ -1,5 +1,6 @@
 // components/PieceSelector.jsx
 import React from 'react';
+import { Hexagon } from 'lucide-react';
 
 const PieceSelector = ({ pieces, selectedType, onSelect, isPlacingNew, currentPlayer }) => {
     if (!isPlacingNew) return null;
