@@ -117,10 +117,7 @@ const HiveGame = () => {
   }, [board, turn]);
 
   const handleForfeit = () => {
-    setWinner(currentPlayer === 1 ? 2 : 1); // Opponent wins
-  };
-
-  const resetGame = () => {
+      setWinner(currentPlayer === 1 ? 2 : 1);
     setBoard([]);
     setSelectedPiece(null);
     setCurrentPlayer(1);
@@ -128,9 +125,25 @@ const HiveGame = () => {
     setTurn(1);
     setHighlightedTiles([]);
     setCanMakeMove(true);
-    setWinner(null);
-    setInitialTime(600); 
-    setShowTimerSetup(true); 
+    // setWinner(null);
+  };
+
+  // const resetGame = () => {
+  //   setBoard([]);
+  //   setSelectedPiece(null);
+  //   setCurrentPlayer(1);
+  //   setSelectedType(null);
+  //   setTurn(1);
+  //   setHighlightedTiles([]);
+  //   setCanMakeMove(true);
+  //   setWinner(null);
+  //   setInitialTime(600); 
+  //   setShowTimerSetup(true); 
+  // };
+
+  //im lazy
+  const resetGame = () => {
+    window.location.reload();
   };
 
   return (
@@ -173,6 +186,7 @@ const HiveGame = () => {
           onForfeit={handleForfeit}
           onZoomIn={() => setHexSize((prev) => Math.min(prev + 5, 100))}
           onZoomOut={() => setHexSize((prev) => Math.max(prev - 5, 20))}
+    
         />
 
         <PieceSelector
