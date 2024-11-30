@@ -1,5 +1,7 @@
 # Hive
 
+https://www.gen42.com/games/hive
+
 React version of Hive
 
 ## Rules
