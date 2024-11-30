@@ -1,25 +1,28 @@
 // GameBoard.jsx
-import React from 'react';
+// import React from 'react';
 import HexGrid from './HexGrid';
 import HexPiece from './HexPiece';
-// GameBoard.jsx
+import { getValidMoves} from './GameLogic';
+import React, { useMemo } from 'react';
+
 const GameBoard = ({ 
     board, 
     selectedPiece,
     selectedType,
     hexSize,
-    getValidMoves,
     onHexClick,
     onPieceClick,
     calculatePosition,
     canPlace,
     currentPlayer,
     turn,
-    isPlacingNew
-  }) => {
-    
-    const validMoves = (!isPlacingNew && selectedPiece) ? 
-      getValidMoves(board, selectedPiece, turn) : [];
+    isPlacingNew,
+}) => {
+    // Calculate valid moves once at the board level
+    const validMoves = useMemo(() => 
+        selectedPiece ? getValidMoves(board, selectedPiece, turn) : [],
+        [selectedPiece, board, turn]
+    );
     
     return (
       <div className="w-full h-full relative">
@@ -29,24 +32,31 @@ const GameBoard = ({
             const qCoord = q - 10;
             const rCoord = r - 10;
             const pos = calculatePosition(qCoord, rCoord, hexSize);
+            
             const isOccupied = board.some(p => p.q === qCoord && p.r === rCoord);
             
-            // For beetle moves, we want to show highlights even on occupied spaces
-            const validMove = validMoves.some(m => 
-              m.q === qCoord && 
-              m.r === rCoord
-            ) && (selectedPiece?.t === 'beetle' || !isOccupied);
-            
-            const validPlace = (isPlacingNew && selectedType && 
-              !isOccupied && // Never show green placement highlights on occupied spaces
-              canPlace(board, qCoord, rCoord, selectedType, currentPlayer, turn));
+            // Only show placement highlights if we're not moving a piece
+            const validPlace = !selectedPiece && selectedType && 
+              !isOccupied &&
+              canPlace(board, qCoord, rCoord, selectedType, currentPlayer, turn);
+
+            // Find if this is a valid move destination
+            const validMove = selectedPiece && validMoves.find(move => 
+              move.q === qCoord && move.r === rCoord
+            );
+
+            // Determine if this is a beetle climbing move
+            const isBeetleClimbing = validMove && 
+              selectedPiece?.t === 'beetle' && 
+              board.some(p => p.q === qCoord && p.r === rCoord);
 
             return (
               <HexGrid
                 key={`${q}-${r}`}
                 size={hexSize}
-                valid={validPlace}
-                validMove={validMove}
+                valid={!selectedPiece && validPlace}
+                validMove={!!validMove}
+                isBeetleClimbing={isBeetleClimbing}
                 position={pos}
                 onClick={() => onHexClick(qCoord, rCoord)}
               />
@@ -55,6 +65,7 @@ const GameBoard = ({
         )}
         </svg>
         
+        {/* Piece rendering remains the same */}
         {board.map((piece, i) => (
           <HexPiece
             key={i}
@@ -70,6 +81,6 @@ const GameBoard = ({
         ))}
       </div>
     );
-  };
+};
 
 export default GameBoard;

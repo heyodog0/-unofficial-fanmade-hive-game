@@ -34,7 +34,7 @@ const PieceIcon = ({ type, color }) => {
 const HexPiece = ({ piece, size, selected, onClick, position }) => {
     const zOffset = piece.z * 2;
     const pieceSize = selected ? size * 1.5 : size * 1.5;
-    const clickAreaSize = pieceSize * 1.2; // Larger click area
+    const clickAreaSize = pieceSize * 1.2;
     const color = piece.p === 1 ? 'rgb(59, 130, 246)' : 'rgb(239, 68, 68)';
     
     // Get all pieces at this position
@@ -53,7 +53,7 @@ const HexPiece = ({ piece, size, selected, onClick, position }) => {
     
     return (
       <div
-        className="absolute cursor-pointer transition-transform duration-200"
+        className={`absolute transition-transform duration-200 ${onClick ? 'cursor-pointer' : ''}`}
         style={{
           left: position.x - clickAreaSize/2,
           top: position.y - clickAreaSize/2 - zOffset,
@@ -65,21 +65,22 @@ const HexPiece = ({ piece, size, selected, onClick, position }) => {
           alignItems: 'center',
           justifyContent: 'center'
         }}
-        onClick={(e) => {
+        onClick={onClick ? (e) => {
           e.stopPropagation();
           onClick();
-        }}
+        } : undefined}
       >
         <div style={{ 
           width: pieceSize, 
           height: pieceSize,
-          position: 'relative' 
+          position: 'relative',
+          pointerEvents: 'none'
         }}>
           <Hexagon size={pieceSize} color={color} fill={color} strokeWidth={2} />
           <PieceIcon type={piece.t} color="white" />
           
           {stackedPieces.length > 1 && (
-            <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-2 py-0.5 rounded-full text-xs font-bold">
+            <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-2 py-0.5 rounded-full text-xs font-bold pointer-events-none">
               +{stackedPieces.length - 1}
             </div>
           )}
@@ -87,5 +88,5 @@ const HexPiece = ({ piece, size, selected, onClick, position }) => {
       </div>
     );
 };
-  
-  export default HexPiece;
+
+export default HexPiece;
