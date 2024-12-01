@@ -49,7 +49,7 @@ const PieceSelector = ({
               piece={{ t: name, p: player, q: 0, r: 0, z: 0 }}
               size={64}
               position={{ x: 56, y: 56 }}
-              selected={false}
+              selected={false}g
             />
             <div className={`absolute top-1 left-1 w-6 h-6 flex items-center justify-center rounded-full ${
               player === 1 ? 'bg-blue-600' : 'bg-red-600'
@@ -63,7 +63,7 @@ const PieceSelector = ({
   );
 
   return (
-    <div className="fixed top-52 left-1/2 -translate-x-1/2 flex justify-center gap-[1000px]">
+    <div className="fixed top-52 left-1/2 -translate-x-1/2 flex justify-center gap-[850px]">
       <div className="pointer-events-auto flex flex-col items-center justify-center gap-2 p-2 rounded-lg">
         {renderPlayerPieces(1)}
       </div>
