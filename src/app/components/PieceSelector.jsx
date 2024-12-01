@@ -63,7 +63,7 @@ const PieceSelector = ({
   );
 
   return (
-    <div className="fixed top-48 left-1/2 -translate-x-1/2 flex justify-center gap-[800px]">
+    <div className="fixed top-52 left-1/2 -translate-x-1/2 flex justify-center gap-[900px]">
       <div className="pointer-events-auto flex flex-col items-center justify-center gap-2 p-2 rounded-lg">
         {renderPlayerPieces(1)}
       </div>
