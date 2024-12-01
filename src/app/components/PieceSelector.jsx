@@ -1,6 +1,14 @@
 import React from 'react';
 import HexPiece from './HexPiece';
 
+const PIECES = {
+  queen: 1,
+  beetle: 2,
+  spider: 2,
+  grasshopper: 3,
+  ant: 3
+};
+
 const PieceSelector = ({
   board,
   currentPlayer,
