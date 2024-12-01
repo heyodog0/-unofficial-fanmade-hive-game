@@ -40,15 +40,15 @@ const PieceSelector = ({
             onClick={() => !isDisabled && setSelectedType(name)}
             disabled={isDisabled}
             className={`
-              w-20 h-20 bg-gray-700 rounded-md font-semibold transition-all flex items-center justify-center relative
+              w-28 h-28 bg-gray-700 rounded-md font-semibold transition-all flex items-center justify-center relative
               ${selectedType === name && player === currentPlayer ? 'bg-emerald-500 text-white shadow-lg' : 'hover:bg-gray-600'}
               ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}
             `}
           >
             <HexPiece
               piece={{ t: name, p: player, q: 0, r: 0, z: 0 }}
-              size={48}
-              position={{ x: 40, y: 40 }}
+              size={64}
+              position={{ x: 56, y: 56 }}
               selected={false}
             />
             <div className={`absolute top-1 left-1 w-6 h-6 flex items-center justify-center rounded-full ${
@@ -63,7 +63,7 @@ const PieceSelector = ({
   );
 
   return (
-    <div className="fixed top-52 left-1/2 -translate-x-1/2 flex justify-center gap-[900px]">
+    <div className="fixed top-52 left-1/2 -translate-x-1/2 flex justify-center gap-[1000px]">
       <div className="pointer-events-auto flex flex-col items-center justify-center gap-2 p-2 rounded-lg">
         {renderPlayerPieces(1)}
       </div>
