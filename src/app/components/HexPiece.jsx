@@ -77,7 +77,16 @@ const HexPiece = ({ piece, size, selected, onClick, position }) => {
           position: 'relative',
           pointerEvents: 'none'
         }}>
-          <Hexagon size={pieceSize} color={color} fill={color} strokeWidth={2} />
+          <Hexagon 
+  size={pieceSize} 
+  color={color} 
+  fill={color} 
+  strokeWidth={2} 
+  style={{
+    filter: 'drop-shadow(0px 4px 1.5px rgba(0, 0, 0, 0.25))',
+    transform: `translateY(-${piece.z * 2}px)`
+  }}
+/>
           <PieceIcon type={piece.t} color="white" />
           
           {stackedPieces.length > 1 && (
