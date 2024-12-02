@@ -24,20 +24,39 @@ export const countPieces = (board, type, player) =>
   board.filter(x => x.t === type && x.p === player).length;
 
 export const canSlide = (board, from, to) => {
-    // Beetles can move to any adjacent hex, regardless of what's there
-    if (from.t === 'beetle') {
-      const isAdjacent = getAdjacentCoords(from.q, from.r)
-        .some(p => p.q === to.q && p.r === to.r);
-      return isAdjacent;
+  const isAdjacent = getAdjacentCoords(from.q, from.r)
+    .some(p => p.q === to.q && p.r === to.r);
+    
+  if (from.t === 'beetle') {
+    // If beetle is above other pieces (z > 0), it can move to any adjacent hex
+    if (from.z > 0 && isAdjacent) {
+      return true;
     }
-  
+    
+    // If moving to an occupied hex, beetle can always climb it if adjacent
+    if (findPieceOnTop(board, to.q, to.r) && isAdjacent) {
+      return true;
+    }
+    
+    // If on ground level (z=0) and moving to empty hex, must follow sliding rules
     const commonNeighbors = getAdjacentCoords(from.q, from.r)
       .filter(p => getAdjacentCoords(to.q, to.r)
-        .some(n => n.q === p.q && n.r === p.r))
-      .filter(p => findPieceAt(board, p.q, p.r));
-  
-    return commonNeighbors.length > 0;
-  };
+        .some(n => n.q === p.q && n.r === p.r));
+    
+    if (commonNeighbors.length !== 2) return false;
+    const occupiedCount = commonNeighbors.filter(p => findPieceAt(board, p.q, p.r)).length;
+    return occupiedCount === 1;
+  }
+
+  // Non-beetle pieces follow normal sliding rules
+  const commonNeighbors = getAdjacentCoords(from.q, from.r)
+    .filter(p => getAdjacentCoords(to.q, to.r)
+      .some(n => n.q === p.q && n.r === p.r));
+
+  if (commonNeighbors.length !== 2) return false;
+  const occupiedCount = commonNeighbors.filter(p => findPieceAt(board, p.q, p.r)).length;
+  return occupiedCount === 1;
+};
 
 export const isConnected = (board) => {
   if (board.length <= 1) return true;
@@ -108,24 +127,32 @@ export const canPlace = (board, q, r, type, player, turn) => {
 
     const moves = new Set();
   
-    if (piece.t === 'queen' || piece.t === 'beetle') {
-      getAdjacentCoords(piece.q, piece.r).forEach(pos => {
-        if (piece.t === 'queen' && findPieceOnTop(board, pos.q, pos.r)) return;
-        
-        const targetPiece = findPieceOnTop(board, pos.q, pos.r);
-        const newZ = piece.t === 'beetle' ? (targetPiece ? targetPiece.z + 1 : 0) : 0;
-        
-        // For beetle, check if move is adjacent. For queen, check if can slide
-        if ((piece.t === 'beetle') || (!findPieceOnTop(board, pos.q, pos.r) && canSlide(board, piece, pos))) {
-          const newBoard = [...board.filter(x => x !== piece),
-            {...piece, q: pos.q, r: pos.r, z: newZ}];
-            
-          if (isConnected(newBoard)) {
-            moves.add(`${pos.q},${pos.r},${newZ}`);
-          }
+if (piece.t === 'queen' || piece.t === 'beetle') {
+  getAdjacentCoords(piece.q, piece.r).forEach(pos => {
+    const targetPiece = findPieceOnTop(board, pos.q, pos.r);
+    const newZ = piece.t === 'beetle' ? (targetPiece ? targetPiece.z + 1 : 0) : 0;
+    
+    // NEW: For beetles, only allow move if climbing OR follows sliding rules
+    if (piece.t === 'beetle') {
+      // Can always climb onto adjacent occupied hexes
+      if (targetPiece || canSlide(board, piece, pos)) {
+        const newBoard = [...board.filter(x => x !== piece),
+          {...piece, q: pos.q, r: pos.r, z: newZ}];
+          
+        if (isConnected(newBoard)) {
+          moves.add(`${pos.q},${pos.r},${newZ}`);
         }
-      });
+      }
+    } else if (!targetPiece && canSlide(board, piece, pos)) { // For queen
+      const newBoard = [...board.filter(x => x !== piece),
+        {...piece, q: pos.q, r: pos.r, z: newZ}];
+        
+      if (isConnected(newBoard)) {
+        moves.add(`${pos.q},${pos.r},${newZ}`);
+      }
     }
+  });
+}
 
   if (piece.t === 'ant') {
     const seen = new Set([`${piece.q},${piece.r}`]);
