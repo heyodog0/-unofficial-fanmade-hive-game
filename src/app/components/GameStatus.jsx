@@ -23,7 +23,7 @@ const GameStatus = ({
   }
 
   return (
-    <div className="flex gap-4 min-h-[100px] items-center justify-center px-4 mb-4">
+    <div className="flex gap-4 min-h-[100px] items-center justify-center px-4">
       <div className="flex-1 bg-gray-800 rounded-lg p-4">
         <div className="flex items-center justify-center gap-4">
           <div
