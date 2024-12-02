@@ -32,12 +32,10 @@ export const canSlide = (board, from, to) => {
     if (from.z > 0 && isAdjacent) {
       return true;
     }
-    
     // If moving to an occupied hex, beetle can always climb it if adjacent
     if (findPieceOnTop(board, to.q, to.r) && isAdjacent) {
       return true;
     }
-    
     // If on ground level (z=0) and moving to empty hex, must follow sliding rules
     const commonNeighbors = getAdjacentCoords(from.q, from.r)
       .filter(p => getAdjacentCoords(to.q, to.r)
@@ -47,7 +45,6 @@ export const canSlide = (board, from, to) => {
     const occupiedCount = commonNeighbors.filter(p => findPieceAt(board, p.q, p.r)).length;
     return occupiedCount === 1;
   }
-
   // Non-beetle pieces follow normal sliding rules
   const commonNeighbors = getAdjacentCoords(from.q, from.r)
     .filter(p => getAdjacentCoords(to.q, to.r)

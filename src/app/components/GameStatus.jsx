@@ -47,7 +47,7 @@ const GameStatus = ({
               <select 
                 value={initialTime} 
                 onChange={(e) => setInitialTime(Number(e.target.value))}
-className="bg-gray-700 text-white rounded pl-8 pr-8 py-2 appearance-none"
+                className="bg-gray-700 text-white rounded pl-8 pr-8 py-2 appearance-none"
               >
                 <option value={300}>5 minutes</option>
                 <option value={600}>10 minutes</option>

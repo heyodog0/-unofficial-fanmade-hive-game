@@ -32,71 +32,69 @@ const PieceIcon = ({ type, color }) => {
 
 
 const HexPiece = ({ piece, size, selected, onClick, position }) => {
-    const zOffset = piece.z * 2;
-    const pieceSize = selected ? size * 1.5 : size * 1.9;
-    const pieceSizez = selected ? size * .5 : size * 1.9;
-    const clickAreaSize = pieceSizez ;
-    const color = piece.p === 1 ? 'rgb(59, 130, 246)' : 'rgb(239, 68, 68)';
-    
-    // Get all pieces at this position
-    const stackedPieces = piece.board?.filter(p => 
-      p.q === piece.q && 
-      p.r === piece.r
-    ).sort((a, b) => a.z - b.z) || [];
-    
-    // Only render the top piece
-    const isTopPiece = stackedPieces.length === 0 || 
-      stackedPieces[stackedPieces.length - 1].z === piece.z;
+  const zOffset = piece.z * 2;
+  const pieceSize = selected ? size * 1.5 : size * 1.9;
+  const pieceSizez = selected ? size * .5 : size * 1.9;
+  const clickAreaSize = pieceSizez;
+  const color = piece.p === 1 ? 'rgb(59, 130, 246)' : 'rgb(239, 68, 68)';
   
-    if (!isTopPiece) {
-      return null;
-    }
-    
-    return (
-      <div
-        className={`absolute transition-transform duration-200 ${onClick ? 'cursor-pointer' : ''}`}
-        style={{
-          left: position.x - clickAreaSize/2,
-          top: position.y - clickAreaSize/2 - zOffset,
-          width: clickAreaSize,
-          height: clickAreaSize,
-          zIndex: piece.z * 10,
-          transform: selected ? 'scale(1.4)' : 'scale(1)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}
-        onClick={onClick ? (e) => {
-          e.stopPropagation();
-          onClick();
-        } : undefined}
-      >
-        <div style={{ 
-          width: pieceSize, 
-          height: pieceSize,
-          position: 'relative',
-          pointerEvents: 'none'
-        }}>
-          <Hexagon 
-  size={pieceSize} 
-  color={color} 
-  fill={color} 
-  strokeWidth={2} 
-  style={{
-    filter: 'drop-shadow(0px 4px 1.5px rgba(0, 0, 0, 0.25))',
-    transform: `translateY(-${piece.z * 2}px)`
-  }}
-/>
-          <PieceIcon type={piece.t} color="white" />
-          
-          {stackedPieces.length > 1 && (
-            <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-2 py-0.5 rounded-full text-xs font-bold pointer-events-none">
-              +{stackedPieces.length - 1}
-            </div>
-          )}
-        </div>
+  const stackedPieces = piece.board?.filter(p => 
+    p.q === piece.q && 
+    p.r === piece.r
+  ).sort((a, b) => a.z - b.z) || [];
+  
+  const isTopPiece = stackedPieces.length === 0 || 
+    stackedPieces[stackedPieces.length - 1].z === piece.z;
+
+  if (!isTopPiece) {
+    return null;
+  }
+  
+  return (
+    <div
+      className={`absolute transition-transform duration-200 ${onClick ? 'cursor-pointer' : ''}`}
+      style={{
+        left: position.x - clickAreaSize/2,
+        top: position.y - clickAreaSize/2 - zOffset,
+        width: clickAreaSize,
+        height: clickAreaSize,
+        zIndex: piece.z * 10,
+        transform: selected ? 'scale(1.4)' : 'scale(1)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}
+      onClick={onClick ? (e) => {
+        e.stopPropagation();
+        onClick();
+      } : undefined}
+    >
+      <div style={{ 
+        width: pieceSize, 
+        height: pieceSize,
+        position: 'relative',
+        pointerEvents: 'none'
+      }}>
+        <Hexagon 
+          size={pieceSize} 
+          color={color} 
+          fill={color} 
+          strokeWidth={2} 
+          style={{
+            filter: 'drop-shadow(0px 4px 1.5px rgba(0, 0, 0, 0.25))',
+            transform: `translateY(-${piece.z * 2}px)`
+          }}
+        />
+        <PieceIcon type={piece.t} color="white" />
+        
+        {stackedPieces.length > 1 && (
+          <div className="absolute -bottom-0 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-2 py-1 rounded-full text-xs font-bold select-none pointer-events-none">
+            +{stackedPieces.length - 1}
+          </div>
+        )}
       </div>
-    );
+    </div>
+  );
 };
 
 export default HexPiece;
