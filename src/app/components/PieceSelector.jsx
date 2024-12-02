@@ -41,7 +41,9 @@ const PieceSelector = ({
             disabled={isDisabled}
             className={`
               w-28 h-28 bg-gray-700 rounded-md font-semibold transition-all flex items-center justify-center relative
-              ${selectedType === name && player === currentPlayer ? 'bg-emerald-500 text-white shadow-lg' : 'hover:bg-gray-600'}
+              ${selectedType === name && player === currentPlayer 
+                ? `ring-4 ${player === 1 ? 'ring-blue-500/50' : 'ring-red-500/50'} shadow-lg shadow-${player === 1 ? 'blue' : 'red'}-500/50` 
+                : 'hover:bg-gray-600'}
               ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}
             `}
           >
