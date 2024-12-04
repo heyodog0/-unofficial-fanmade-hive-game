@@ -1,7 +1,7 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "Hive Board Game",
+  title: "[Unoffical Fan-made] Hive Board Game",
   description: "A digital adaptation of the Hive board game",
   icons: {
     icon: [
