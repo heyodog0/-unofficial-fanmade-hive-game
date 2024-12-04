@@ -159,6 +159,9 @@ const HiveGame = () => {
       )}
 
       <div className="w-full max-w-[1200px] flex flex-col items-center">
+      <div className="text-white-400 text-xl mb-4 font-bold">
+          This is an unofficial fan-made application
+        </div>
         <GameStatus 
           currentPlayer={currentPlayer}
           turn={turn}

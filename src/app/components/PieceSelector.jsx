@@ -17,7 +17,6 @@ const PieceSelector = ({
   selectedPiece,
   turn
 }) => {
-  // Internal hasQueen check
   const hasQueen = (player) => 
     board.some(piece => piece.p === player && piece.t === 'queen');
 
@@ -51,7 +50,7 @@ const PieceSelector = ({
               piece={{ t: name, p: player, q: 0, r: 0, z: 0 }}
               size={64}
               position={{ x: 56, y: 56 }}
-              selected={false}g
+              selected={false}
             />
             <div className={`absolute top-1 left-1 w-6 h-6 flex items-center justify-center rounded-full ${
               player === 1 ? 'bg-blue-600' : 'bg-red-600'
@@ -65,11 +64,11 @@ const PieceSelector = ({
   );
 
   return (
-    <div className="fixed top-52 left-1/2 -translate-x-1/2 flex justify-center gap-[850px]">
-      <div className="pointer-events-auto flex flex-col items-center justify-center gap-2 p-2 rounded-lg">
+    <div className="absolute top-[6vh] left-1/2 -translate-x-1/2 flex justify-between w-[1100px]">
+      <div className="pointer-events-auto">
         {renderPlayerPieces(1)}
       </div>
-      <div className="pointer-events-auto flex flex-col items-center justify-center gap-2 p-2 rounded-lg">
+      <div className="pointer-events-auto">
         {renderPlayerPieces(2)}
       </div>
     </div>

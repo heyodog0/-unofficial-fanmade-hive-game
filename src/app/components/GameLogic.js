@@ -24,36 +24,100 @@ export const countPieces = (board, type, player) =>
   board.filter(x => x.t === type && x.p === player).length;
 
 export const canSlide = (board, from, to) => {
+  console.log("Attempting to slide or climb:", { from, to });
+
   const isAdjacent = getAdjacentCoords(from.q, from.r)
     .some(p => p.q === to.q && p.r === to.r);
-    
-  if (from.t === 'beetle') {
-    // If beetle is above other pieces (z > 0), it can move to any adjacent hex
-    if (from.z > 0 && isAdjacent) {
-      return true;
-    }
-    // If moving to an occupied hex, beetle can always climb it if adjacent
-    if (findPieceOnTop(board, to.q, to.r) && isAdjacent) {
-      return true;
-    }
-    // If on ground level (z=0) and moving to empty hex, must follow sliding rules
-    const commonNeighbors = getAdjacentCoords(from.q, from.r)
-      .filter(p => getAdjacentCoords(to.q, to.r)
-        .some(n => n.q === p.q && n.r === p.r));
-    
-    if (commonNeighbors.length !== 2) return false;
-    const occupiedCount = commonNeighbors.filter(p => findPieceAt(board, p.q, p.r)).length;
-    return occupiedCount === 1;
+  if (!isAdjacent) {
+    console.log("Failed: Target is not adjacent");
+    return false;
   }
-  // Non-beetle pieces follow normal sliding rules
+
+  const destPiece = findPieceOnTop(board, to.q, to.r); // Fix applied here
+  const targetHeight = destPiece ? destPiece.z + 1 : 0;
+
+  console.log("Destination piece and height:", { destPiece, targetHeight });
+
+  if (from.t === 'beetle') {
+    if (!destPiece) {
+      // Sliding logic
+      console.log("Attempting to slide into an unoccupied space...");
+
+      const gatePositions = getAdjacentCoords(from.q, from.r)
+        .filter(p => getAdjacentCoords(to.q, to.r)
+          .some(n => n.q === p.q && n.r === p.r));
+
+      console.log("Gate positions identified:", gatePositions);
+
+      const occupiedGatesAtCurrentHeight = gatePositions.filter(p => {
+        const piece = findPieceOnTop(board, p.q, p.r);
+        return piece && piece.z >= from.z;
+      }).length;
+
+      if (occupiedGatesAtCurrentHeight === 2) {
+        console.log("Failed: Both gates are occupied, sliding blocked.");
+        return false;
+      }
+
+      console.log("Success: Sliding allowed into unoccupied space.");
+      return true;
+    } else {
+      // Climbing logic
+      console.log("Attempting to climb onto an occupied space...");
+
+      // Ensure the beetle is climbing exactly one level up
+      if (targetHeight !== from.z + 1) {
+        console.log("Failed: Target height is not exactly one level higher.");
+        return false;
+      }
+
+      const gatePositions = getAdjacentCoords(from.q, from.r)
+        .filter(p => getAdjacentCoords(to.q, to.r)
+          .some(n => n.q === p.q && n.r === p.r));
+
+      console.log("Gate positions identified for climbing:", gatePositions);
+
+      const occupiedGatesAtCurrentHeight = gatePositions.filter(p => {
+        const piece = findPieceOnTop(board, p.q, p.r);
+        return piece && piece.z >= from.z;
+      }).length;
+
+      if (occupiedGatesAtCurrentHeight === 2) {
+        console.log("Failed: Both gates are occupied, climbing blocked.");
+        return false;
+      }
+
+      console.log("Success: Climbing allowed onto occupied space.");
+      return true;
+    }
+  }
+
+  // Normal sliding logic for other pieces
   const commonNeighbors = getAdjacentCoords(from.q, from.r)
     .filter(p => getAdjacentCoords(to.q, to.r)
       .some(n => n.q === p.q && n.r === p.r));
 
-  if (commonNeighbors.length !== 2) return false;
+  console.log("Common neighbors for sliding:", commonNeighbors);
+
+  if (commonNeighbors.length !== 2) {
+    console.log("Failed: Sliding requires exactly 2 common neighbors");
+    return false;
+  }
+
   const occupiedCount = commonNeighbors.filter(p => findPieceAt(board, p.q, p.r)).length;
-  return occupiedCount === 1;
+  console.log("Number of occupied common neighbors:", occupiedCount);
+
+  if (occupiedCount !== 1) {
+    console.log("Failed: Sliding requires 1 occupied common neighbor");
+    return false;
+  }
+
+  console.log("Success: Sliding allowed");
+  return true;
 };
+
+
+
 
 export const isConnected = (board) => {
   if (board.length <= 1) return true;
