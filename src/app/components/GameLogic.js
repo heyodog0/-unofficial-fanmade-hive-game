@@ -242,20 +242,22 @@ if (piece.t === 'queen' || piece.t === 'beetle') {
 
   if (piece.t === 'spider') {
     let positions = new Set([`${piece.q},${piece.r}`]);
-    let current = [[piece.q, piece.r]];
+    let current = [{...piece}];
     
     for (let step = 0; step < 3; step++) {
       const next = [];
-      current.forEach(([q, r]) => {
-        getAdjacentCoords(q, r).forEach(n => {
+      current.forEach((pos) => {
+        // Create a temporary board state with the spider removed from its current position
+        const tempBoard = board.filter(x => x !== piece);
+        
+        getAdjacentCoords(pos.q, pos.r).forEach(n => {
           const key = `${n.q},${n.r}`;
-          if (!findPieceAt(board, n.q, n.r) && !positions.has(key) && 
-              canSlide(board, {q, r}, n)) {
-            const newBoard = [...board.filter(x => x !== piece),
-              {...piece, q: n.q, r: n.r}];
+          if (!findPieceAt(tempBoard, n.q, n.r) && !positions.has(key) && 
+              canSlide(tempBoard, pos, {...n, z: 0})) {
+            const newBoard = [...tempBoard, {...piece, q: n.q, r: n.r}];
             if (isConnected(newBoard)) {
               positions.add(key);
-              next.push([n.q, n.r]);
+              next.push({...pos, q: n.q, r: n.r});
               if (step === 2) moves.add(`${n.q},${n.r},0`);
             }
           }
